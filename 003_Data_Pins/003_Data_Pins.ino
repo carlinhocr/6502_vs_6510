@@ -34,7 +34,7 @@ for (int n=0;n<16;n++){
     Serial.print(bit);
     data = (data << 1) + bit;
   }
-  sprintf(output, " %04x  %04c %02x",address,digitalRead(READ_WRITE)?'R':'W',data);
+  sprintf(output, " %04x  %04c %02x",address,digitalRead(READ_WRITE)?'r':'W',data);
   Serial.println(output);
 }
 
