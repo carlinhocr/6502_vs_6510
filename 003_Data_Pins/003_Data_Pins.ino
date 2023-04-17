@@ -16,7 +16,7 @@ void setup() {
   pinMode(READ_WRITE, INPUT);
   // each time that on pin 2 (clock) i receive a HIGH on the rising edge run the onClock function
   attachInterrupt(digitalPinToInterrupt(CLOCK), onClock, RISING); 
-  Serial.begin(57600);
+  Serial.begin(9600);
 }
 
 void onClock (){
