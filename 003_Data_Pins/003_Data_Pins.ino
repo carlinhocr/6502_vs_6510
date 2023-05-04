@@ -22,7 +22,7 @@ void setup() {
 void onClock (){
   char output[15];
   unsigned int address = 0;
-for (int n=0;n<16;n++){
+  for (int n=0;n<16;n++){
     int bit = digitalRead(ADDR[n]) ? 1:0; //? ternary operator if TRUE then 1 else 0
     Serial.print(bit);
     address = (address << 1) + bit;
