@@ -44,7 +44,7 @@ void onClock (){
     int bit = digitalRead(io[n]) ? 1:0; //? ternary operator if TRUE then 1 else 0
     Serial.print(bit);
     io = (io << 1) + bit;
-  }
+  } 
   sprintf(output, " %04x %04c %02x %02x",address,digitalRead(READ_WRITE)?'r':'W',data,io);
   Serial.println(output);
 }
