@@ -1,0 +1,10 @@
+
+
+
+
+
+
+
+https://c64os.com/post/6510procport how the io port works
+http://www.zimmers.net/anonftp/pub/cbm/schematics/computers/c64/C64SchematicP1.png c64 schematics part 1
+http://www.zimmers.net/anonftp/pub/cbm/schematics/computers/c64/C64SchematicP2.png c64 schematics part 2
