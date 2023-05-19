@@ -1,6 +1,6 @@
 const char ADDR[] = {22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52}; //char is one byte from -127 to 127
 const char DATA[] = {39,41,43,45,47,49,51,53};
-const char IOPORT[] = {8,9,10,11,12,13};
+const char IOPORT[] = {13,12,11,10,9,8}; // para que el bit 7 el mas significativo quede primero en el shift de ioport
 
 #define CLOCK 2
 #define READ_WRITE 3
