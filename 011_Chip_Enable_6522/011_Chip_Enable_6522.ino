@@ -29,6 +29,7 @@ void onClock (){
   int CS2_VALUE = digitalRead(CS2) ? 1:0;
   Serial.print(CS1_VALUE);
   Serial.print(CS2_VALUE);
+  Serial.print("    ");
   char output[15];
   unsigned int address = 0;
   for (int n=0;n<16;n++){
