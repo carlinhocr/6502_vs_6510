@@ -1,17 +1,19 @@
+ ; the register form the CIA are different that the one used on the VIA
   .org $8000
 RESET:
-  lda #$ff
-  sta $6002
+  ;put all bits of the 6526 as output, lets load 1111 1111
+  lda #$ff  ;load all ones
+  sta $6003 ;store the accumulator in the data direction register for Port B
 
 LOOP:
-  lda #$55
-  sta $6000
+  lda #$55 ;load value 01010101
+  sta $6001 ;store the accumulator in the output register for Port B
 
-  lda #$aa
-  sta $6000
+  lda #$aa ;load value 10101010
+  sta $6001 ;store the accumulator in the output register for Port B
 
   jmp LOOP
 
-  .org $fffc
-  .word RESET
-  .word $0000
+  .org $fffc ;go to memory address of the reset vector
+  .word RESET ;store in $FFFC & $FFFD the memory address of the RESET: label
+  .word $0000 ;finish completing the values of the eeprom $fffe $ffff
