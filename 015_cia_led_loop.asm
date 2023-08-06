@@ -1,15 +1,18 @@
   .org $8000
 RESET:
   ;put all bits of the 6522 as output, lets load 1111 1111
-  lda #$ff  ;load all ones
-  sta $6003 ;store the accumulator in the data direction register for Port B
+  lda #$ff  ;load all ones 1111 1111
+  ;store the accumulator in the data direction register for Port B
+  sta $6003 ;0110 0000 0000 0011
 
   lda #$50 ;load value 00000101
-  sta $6001 ;store the accumulator in the output register for Port B
-
+  ;store the accumulator in the output register for Port B
+  sta $6001 ;0110 0000 0000 0001
+  
 LOOP:
   ror ;shift values one bit to the right using the carry 00000101 => 00001010
-  sta $6001 ;store the accumulator in the output register for Port B
+  ;store the accumulator in the output register for Port B
+  sta $6001 ;0110 0000 0000 0001
 
   jmp LOOP
 
