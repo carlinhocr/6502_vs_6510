@@ -4,6 +4,12 @@ PORTA = $6000
 DDRB = $6003
 DDRA = $6002
 
+;VIA Ports and Constants
+;PORTB = $6000
+;PORTA = $6001
+;DDRB = $6002
+;DDRA = $6003
+
 ;define LCD signals
 E = %10000000 ;Enable Signal
 RW = %01000000 ; Read/Write Signal
@@ -20,6 +26,23 @@ RESET:
   sta DDRA ;store the accumulator in the data direction register for Port A
   ;END Initialize LCD Display
   
+  ; BEGIN clear display instruction  on port B
+  lda #%00000001 ;the instruction itself is 00000001
+  sta PORTB
+            
+  lda #%0  ;Clear RS,RW and E bit on Port A  
+  sta PORTA ;     
+
+  ;togle the enable bit in order to send the instruction
+  ;RS is zero so we are sending instructions
+  ;RW is zero so we are writing
+  lda #E ;enable bit is 1 , so we turn on the chip and execute the instruction.
+  sta PORTA ; 
+
+  lda #%0  ;Clear RS,RW and E bit on Port A  
+  sta PORTA ;  
+  ; END clear display instruction on port B  
+
   ; BEGIN send the instruction function set on port B
   lda #%00111000 ;the instruction itself is 001, data lenght 8bits(1), Number Display lines 2 (1)
             ;and Character Font 5x8 (0), last two bits are unused
