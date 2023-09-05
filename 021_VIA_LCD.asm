@@ -13,10 +13,11 @@ RS = %00100000 ; Register Select
   .org $8000
 RESET:
   ;BEGIN Initialize LCD Display
+  ;set all port B pins as output
   lda #%11111111  ;load all ones equivalent to $FF
   sta DDRB ;store the accumulator in the data direction register for Port B
 
-  lda #%11100000  ;set the first 3 pins as output
+  lda #%11100000  ;set the last 3 pins as output
   sta DDRA ;store the accumulator in the data direction register for Port A
   ;END Initialize LCD Display
   
