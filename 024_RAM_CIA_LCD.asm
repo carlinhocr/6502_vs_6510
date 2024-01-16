@@ -4,6 +4,9 @@ PORTA = $6000
 DDRB = $6003
 DDRA = $6002
 
+;RAM addresses
+startRAMData =$2000
+
 ;VIA Ports and Constants
 ;PORTB = $6000
 ;PORTA = $6001
@@ -96,8 +99,17 @@ RESET:
   sta PORTA ;  
   ; END Entry Mode Set instruction
 
-  ;BEGIN Write letter "O"
+  ;Write letters to memory
+  ;BEGIN store letter "O"
   lda #"O" ;O in ascii
+  sta startRAMData
+
+  ;BEGIN store letter "s"
+  lda #"s" ;s in ascii
+  sta startRAMData + 1
+
+  ;BEGIN Write letter "O"
+  lda startRAMData ;O in ascii
   sta PORTB
 
   ;RS is one so we are sending data
@@ -114,7 +126,7 @@ RESET:
   ;END Write letter "O"
 
   ;BEGIN Write letter "s"
-  lda #"s" ;s in ascii
+  lda startRAMData + 1;s in ascii
   sta PORTB
 
   ;RS is one so we are sending data
