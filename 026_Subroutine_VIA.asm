@@ -11,8 +11,8 @@ startRAMData =$2000
 E = %10000000 ;Enable Signal
 RW = %01000000 ; Read/Write Signal
 RS = %00100000 ; Register Select
-  .org $2000
-  .byte "O","s","o","L","a","b","s"
+  ;.org $2000
+  ;.byte "O","s","o","L","a","b","s"
 
   .org $8000
 RESET:
