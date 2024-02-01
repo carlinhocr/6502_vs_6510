@@ -16,6 +16,11 @@ RS = %00100000 ; Register Select
 
   .org $8000
 RESET:
+
+  ;BEGIN Initialize stack pointer to $01FF
+  ldx #$ff 
+  txs   ;transfer the X register to the Stack pointer
+  ;END Initialize stack pointer to $01FF
   ;BEGIN Initialize LCD Display
   ;set all port B pins as output
   lda #%11111111  ;load all ones equivalent to $FF
