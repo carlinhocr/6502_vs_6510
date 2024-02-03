@@ -17,8 +17,8 @@ startRAMData =$2000
 E = %10000000 ;Enable Signal
 RW = %01000000 ; Read/Write Signal
 RS = %00100000 ; Register Select
-  ;.org $2000
-  ;.byte "O","s","o","L","a","b","s"
+  .org $2000
+  .byte "O","s","o","L","a","b","s"
 
   .org $8000
 RESET:
@@ -59,49 +59,16 @@ RESET:
   jsr lcd_send_instruction
   ; END Entry Mode Set instruction
 
-  ;BEGIN Write letters to memory
-  ;BEGIN store letter "O"
-  lda #"O" ;O in ascii
-  sta startRAMData
 
-  ;BEGIN store letter "s"
-  lda #"s" ;s in ascii
-  sta startRAMData + 1
-  ;END Write letters to memory
-
-  ;BEGIN Write letter "O"
-  lda startRAMData ;O in ascii
+  ;BEGIN Write all the letters
+  ldx #$ff ;start on FF so when i add one it will be 0
+print_message:  
+  inx
+  lda startRAMData,x ;load letter from memory position startRAMData + the value of register X
   jsr print_char 
-  ;END Write letter "O"
-
-  ;BEGIN Write letter "s"
-  lda startRAMData + 1;s in ascii
-  jsr print_char 
-  ;END Write letter "s"
-
-  ;BEGIN Write letter "o"
-  lda #"o" ;o in ascii
-  jsr print_char 
-  ;END Write letter "o"
-
-  ;BEGIN Write letter "L"
-  lda #"L" ;L in ascii
-  jsr print_char 
-  ;END Write letter "L"
-
-  ;BEGIN Write letter "a"
-  lda #"a" ;a in ascii
-  jsr print_char 
-  ;END Write letter "a"
-
-    ;BEGIN Write letter "b"
-  lda #"b" ;b in ascii
-  jsr print_char  
-  ;END Write letter "b"
-
-  ;BEGIN Write letter "s"
-  lda #"s" ;s in ascii
-  jsr print_char 
+  cpx #$6 ;compare the number of letter OsoLabs 7 letters from 0 to 6 , break on 6
+  bne print_message
+  ;END Write all the letters
 
 loop:
   jmp loop
