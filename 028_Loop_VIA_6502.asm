@@ -7,7 +7,7 @@ DDRA = $6003
 ;RAM addresses
 startRAMData =$2000
 ;EEPROM addresses
-startOsoLabs =$8000
+startOsoLabs =$8500
 
 ;define LCD signals
 E = %10000000 ;Enable Signal
@@ -15,9 +15,9 @@ RW = %01000000 ; Read/Write Signal
 RS = %00100000 ; Register Select
   
 
-  .org $8000
+  .org startOsoLabs
   .byte "O","s","o","L","a","b","s" ;store the OsoLabs string in memory
-  .org $8010
+  .org $8000
 
 
 RESET:
