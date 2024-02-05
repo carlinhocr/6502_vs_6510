@@ -16,19 +16,9 @@ RS = %00100000 ; Register Select
   
 
   .org $8000
-  
-loadOSO:
-  ;BEGIN store the word OSOLABS en in memory starting on the position startRAMData
-  ;.org startRAMData Not using this combination because the file will be too large for a 32kb memory
-  ;.byte "O","s","o","L","a","b","s"
   .byte "O","s","o","L","a","b","s" ;store the OsoLabs string in memory
-  ldx #$ff ; initialize in 255 the X register
-  inx ;on the first increment X=0
-  lda startOsoLabs,x ; read from eeprom use X as offset of the memory
-  sta startRAMData,X ;use X as offset of the memory and write there
-  cpx #$6 ;compare the number of letter OsoLabs 7 letters from 0 to 6 , break on 6
-  bne loadOSO
-  ;END store the word OSOLABS en in memory starting on the position startRAMData
+  .org $8010
+
 
 RESET:
 
@@ -36,6 +26,19 @@ RESET:
   ldx #$ff 
   txs   ;transfer the X register to the Stack pointer
   ;END Initialize stack pointer to $01FF
+
+loadOSO:
+  ;BEGIN store the word OSOLABS en in memory starting on the position startRAMData
+  ;.org startRAMData Not using this combination because the file will be too large for a 32kb memory
+  ;.byte "O","s","o","L","a","b","s"
+
+  ldx #$ff ; initialize in 255 the X register
+  inx ;on the first increment X=0
+  lda startOsoLabs,x ; read from eeprom use X as offset of the memory
+  sta startRAMData,X ;use X as offset of the memory and write there
+  cpx #$6 ;compare the number of letter OsoLabs 7 letters from 0 to 6 , break on 6
+  bne loadOSO
+  ;END store the word OSOLABS en in memory starting on the position startRAMData
 
   ;BEGIN Initialize LCD Display
   ;set all port B pins as output
