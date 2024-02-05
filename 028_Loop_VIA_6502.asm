@@ -34,8 +34,8 @@ loadOSO:
 
   ldx #$ff ; initialize in 255 the X register
   inx ;on the first increment X=0
-  lda startOsoLabs,x ; read from eeprom use X as offset of the memory
-  sta startRAMData,X ;use X as offset of the memory and write there
+  lda startOsoLabs,x ; read from eeprom use X as offset of the eeprom
+  sta startRAMData,x ;use X as offset of the memory and write there
   cpx #$6 ;compare the number of letter OsoLabs 7 letters from 0 to 6 , break on 6
   bne loadOSO
   ;END store the word OSOLABS en in memory starting on the position startRAMData
