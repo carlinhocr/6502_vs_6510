@@ -27,19 +27,19 @@ RESET:
   txs   ;transfer the X register to the Stack pointer
   ;END Initialize stack pointer to $01FF
 
-loadOSO:
-  ;BEGIN store the word OSOLABS en in memory starting on the position startRAMData
-  ;.org startRAMData Not using this combination because the file will be too large for a 32kb memory
-  ;.byte "O","s","o","L","a","b","s"
-
-  ldx #$ff ; initialize in 255 the X register
-  inx ;on the first increment X=0
-  lda startOsoLabs,x ; read from eeprom use X as offset of the eeprom
-  sta startRAMData,x ;use X as offset of the memory and write there
-  cpx #$6 ;compare the number of letter OsoLabs 7 letters from 0 to 6 , break on 6
-  bne loadOSO
-  ;END store the word OSOLABS en in memory starting on the position startRAMData
-
+;loadOSO:
+;  ;BEGIN store the word OSOLABS en in memory starting on the position startRAMData
+;  ;.org startRAMData Not using this combination because the file will be too large for a 32kb memory
+;  ;.byte "O","s","o","L","a","b","s"
+;
+;  ldx #$ff ; initialize in 255 the X register
+;  inx ;on the first increment X=0
+;  lda startOsoLabs,x ; read from eeprom use X as offset of the eeprom
+;  sta startRAMData,x ;use X as offset of the memory and write there
+;  cpx #$6 ;compare the number of letter OsoLabs 7 letters from 0 to 6 , break on 6
+;  bne loadOSO
+;  ;END store the word OSOLABS en in memory starting on the position startRAMData
+;
   ;BEGIN Initialize LCD Display
   ;set all port B pins as output
   lda #%11111111  ;load all ones equivalent to $FF
@@ -77,7 +77,7 @@ loadOSO:
   ldx #$ff ;start on FF so when i add one it will be 0
 print_message:  
   inx
-  lda startRAMData,x ;load letter from memory position startRAMData + the value of register X
+  lda startOsoLabs,x ;load letter from eeprom position startOsoLabs + the value of register X
   jsr print_char 
   cpx #$6 ;compare the number of letter OsoLabs 7 letters from 0 to 6 , break on 6
   bne print_message
@@ -104,6 +104,8 @@ lcd_wait:
   ;set all port B pins as output
   lda #%11111111  ;load all ones equivalent to $FF to make it output
   sta DDRB ;store the accumulator in the data direction register for Port B
+  pla
+  rts
 
 
 lcd_send_instruction:
