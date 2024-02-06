@@ -87,11 +87,11 @@ loop:
   jmp loop
 
 lcd_wait:
-  ;set register select to 0 and RW to 1 to read the busy flag
   pha
-  ;set PORTB to all inputs so we can read
+  ;set PORTB to all inputs so we can read the busy flag
   lda #$00000000 ;port b ins input
   sta DDRB 
+  ;set register select to 0 and RW to 1 to read the busy flag
   lda #RW ;set RW RW = %01000000 ; Read/Write Signal
   sta PORTA
   lda #(RW | E) ;do the enable and do not era the RW bit
