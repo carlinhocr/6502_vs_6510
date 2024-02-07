@@ -1,8 +1,14 @@
+;CIA Ports and Constants
+PORTB = $6001
+PORTA = $6000
+DDRB = $6003
+DDRA = $6002
+
 ;VIA Ports and Constants
-PORTB = $6000
-PORTA = $6001
-DDRB = $6002
-DDRA = $6003
+;PORTB = $6000
+;PORTA = $6001
+;DDRB = $6002
+;DDRA = $6003
 
 ;RAM addresses
 startRAMData =$2000

@@ -87,7 +87,7 @@ loop:
   jmp loop
 
 lcd_wait:
-  pha
+  pha ; push to preserve the contents of the acummulator register
   ;set PORTB to all inputs so we can read the busy flag
   lda #$00000000 ;port b ins input
   sta DDRB 
@@ -99,12 +99,16 @@ lcd_wait:
   ;this will give us the info from the busy flags and the counter 01 BF AC AC AC AC AC AC AC
   ;on port B so we read it
   lda PORTB
-
-
+  and #10000000 ;and the accumulator to loose all bits but the 7 bit (from 7 to 0)
+                ; on the acummulator I will now have only the Busy Flag result
+  bne lcd_wait ; branch if the zero flag is not set
+  ;turn off the enable bit
+  lda #RW ;set RW RW = %01000000 ; Read/Write Signal
+  sta PORTA
   ;set all port B pins as output
   lda #%11111111  ;load all ones equivalent to $FF to make it output
   sta DDRB ;store the accumulator in the data direction register for Port B
-  pla
+  pla ; pull to restablish the contents of the acummulator register
   rts
 
 
