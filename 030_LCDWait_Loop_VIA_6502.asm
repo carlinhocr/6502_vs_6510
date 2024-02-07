@@ -6,6 +6,7 @@ DDRA = $6003
 
 ;RAM addresses
 startRAMData =$2000
+
 ;EEPROM addresses
 startOsoLabs =$8500
 
@@ -71,16 +72,48 @@ RESET:
             ;and Scroll Display Off (0)
   jsr lcd_send_instruction
   ; END Entry Mode Set instruction
+  jsr load_string_memory
+  jsr print_message
 
-
+print_message:  
   ;BEGIN Write all the letters
   ldx #$ff ;start on FF so when i add one it will be 0
-print_message:  
+print_message_eeprom:  
   inx
   lda startOsoLabs,x ;load letter from eeprom position startOsoLabs + the value of register X
   jsr print_char 
   cpx #$6 ;compare the number of letter OsoLabs 7 letters from 0 to 6 , break on 6
-  bne print_message
+  bne print_message_eeprom
+  ;END Write all the letters
+  ldx #$ff ;start on FF so when i add one it will be 0
+print_message_ram:  
+  inx
+  lda startRAMData,x ;load letter from eeprom position startOsoLabs + the value of register X
+  jsr print_char 
+  cpx #$6 ;compare the number of letter OsoLabs 7 letters from 0 to 6 , break on 6
+  bne print_message_ram
+  ;END Write all the letters
+  ldx #$ff ;start on FF so when i add one it will be 0
+print_message_eeprom_wait:  
+  inx
+  lda startOsoLabs,x ;load letter from eeprom position startOsoLabs + the value of register X
+  ldy #$FF
+wait_loop:
+  iny
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  cpy #$FF
+  bne wait_loop
+  jsr print_char 
+  cpx #$6 ;compare the number of letter OsoLabs 7 letters from 0 to 6 , break on 6
+  bne print_message_eeprom_wait
   ;END Write all the letters
 
 loop:
@@ -91,6 +124,7 @@ lcd_wait:
   ;set PORTB to all inputs so we can read the busy flag
   lda #$00000000 ;port b ins input
   sta DDRB 
+lcd_busy:
   ;set register select to 0 and RW to 1 to read the busy flag
   lda #RW ;set RW RW = %01000000 ; Read/Write Signal
   sta PORTA
@@ -99,9 +133,9 @@ lcd_wait:
   ;this will give us the info from the busy flags and the counter 01 BF AC AC AC AC AC AC AC
   ;on port B so we read it
   lda PORTB
-  and #10000000 ;and the accumulator to loose all bits but the 7 bit (from 7 to 0)
+  and #%10000000 ;and the accumulator to loose all bits but the 7 bit (from 7 to 0)
                 ; on the acummulator I will now have only the Busy Flag result
-  bne lcd_wait ; branch if the zero flag is not set
+  bne lcd_busy ; branch if the zero flag is not set
   ;turn off the enable bit
   lda #RW ;set RW RW = %01000000 ; Read/Write Signal
   sta PORTA
@@ -114,6 +148,7 @@ lcd_wait:
 
 lcd_send_instruction:
   pha ;push the accumulator value to the stack so we can have it back a the end of the subroutine
+  jsr lcd_wait
   sta PORTB
             
   lda #%0  ;Clear RS,RW and E bit on Port A  
@@ -132,6 +167,7 @@ lcd_send_instruction:
 
 print_char:
   pha ;push the accumulator value to the stack so we can have it back a the end of the subroutine
+  jsr lcd_wait
   sta PORTB
 
   ;RS is one so we are sending data
@@ -147,7 +183,25 @@ print_char:
   sta PORTA ; 
   pla ;pull the accumulator value to the stack so we can have it back a the end of the subroutine
   rts
-  
+
+load_string_memory:
+  pha
+  lda #"O"
+  sta startRAMData + 0
+  lda #"s"
+  sta startRAMData + 1
+  lda #"o"
+  sta startRAMData + 2
+  lda #"L"
+  sta startRAMData + 3
+  lda #"a"
+  sta startRAMData + 4
+  lda #"b"
+  sta startRAMData + 5
+  lda #"s"
+  sta startRAMData + 6
+  pla
+  rts
 ;complete the file
   .org $fffc ;go to memory address $fffc of the reset vector
   .word RESET ;store in $FFFC & $FFFD the memory address of the RESET: label  00 80 ($8000 in little endian)
