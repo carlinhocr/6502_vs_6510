@@ -13,6 +13,7 @@ DDRA = $6003
 value =$0200 ;2 bytes, Low 16 bit half
 mod10 =$0202 ;2 bytes, high 16 bit half and as it has the remainder of dividing by 10
              ;it is the mod 10 of the division (the remainder)
+message = $0204 ; the result up to 6 bytes
 
 ;RAM addresses
 startRAMData =$2000
@@ -59,20 +60,26 @@ RESET:
   jsr lcd_send_instruction
   ; END Entry Mode Set instruction
 
+  lda #0 ;this isgnals the empty string
+  sta message ;initialize the string we will use for the results
   ;BEGIN Initialization of the 4 bytes
   ; initializae value to be the number to convert
   lda number
   sta value 
   lda number + 1
   sta value + 1
+
+divide:
   ;initialize the remainder to be 0
   lda #0
   sta mod10
   sta mod10 + 1
+  clc ; we will clear the carry bit
   ;END Initialization of the 4 bytes
 
 
   ldx #16
+
 divloop:
   ;rotate the quotient and the remainder
   rol value
@@ -102,17 +109,61 @@ divloop:
 
 ignore_result:
   dex ; decrement the X time that we shifted left
-      ; dex affects the Z flag is the content is zero
+      ; dex affects the Z flag if the content of the x register is zero
   bne divloop ;if what is on the X register
+  ;we will rotate the carry bit inside value to have the result of the division
+  rol value
+  rol value + 1
   
+  ;now we have to store the remainder
+  lda mod10
+  clc
+  adc #"0" ;by adding zero to the a register we will have the ascii number of its value
+  jsr push_char ;and now we store our character in the string
+  ; we will be done dividen whne the result of the division is a zero
+  ; we will check value and value + 1 and if any bit is one we are not done
+  lda value
+  ora value + 1 ; combine all ones from the 16 bits of value
+  bne divide ; if a is not zero keep dividing
 
+print_message:  
+  ;BEGIN Write all the letters
+  ldx #$00 ;start on FF so when i add one it will be 0
 
-
+print_message_eeprom:  
+  lda message,x ;load letter from eeprom position message + the value of register X
+  beq loop ; jump to loop if I load a 0 on lda a zero means the end  of a n .asciiz string
+  jsr print_char 
+  inx
+  jmp print_message_eeprom
+  ;END Write all the letters  
 
 loop:
   jmp loop
 
 number: .word 1729 ;the number we will convert
+
+;add the content of the a register to a null terminated string message
+push_char:
+  pha ;push new character into the stack first 
+  ldy #0
+
+char_loop:
+  lda message,y ;get char on string and put into x
+  tax
+  pla
+  sta message,y ; we replaced the old first character with the new one
+  iny ; lets go to the next character
+  tax
+  pha ; we have the character that used to be on the beginning of the message on the stack
+  ;if a is zero we are at the end of the string
+  bne char_loop
+
+  pla
+  sta message,y ; store the null terminator again
+  rts
+
+
 
 lcd_wait:
   pha ; push to preserve the contents of the acummulator register
