@@ -10,6 +10,10 @@ PORTA = $6001
 DDRB = $6002
 DDRA = $6003
 
+value =$0200 ;2 bytes, Low 16 bit half
+mod10 =$0202 ;2 bytes, high 16 bit half and as it has the remainder of dividing by 10
+             ;it is the mod 10 of the division (the remainder)
+
 ;RAM addresses
 startRAMData =$2000
 
@@ -22,11 +26,6 @@ RS = %00100000 ; Register Select
 
 
 RESET:
-
-  ;BEGIN Initialize stack pointer to $01FF
-  ldx #$ff 
-  txs   ;transfer the X register to the Stack pointer
-  ;END Initialize stack pointer to $01FF
 
   ;BEGIN Initialize LCD Display
   ;set all port B pins as output
@@ -59,25 +58,61 @@ RESET:
             ;and Scroll Display Off (0)
   jsr lcd_send_instruction
   ; END Entry Mode Set instruction
-  jsr print_message
 
-print_message:  
-  ;BEGIN Write all the letters
-  ldx #$00 ;start on FF so when i add one it will be 0
+  ;BEGIN Initialization of the 4 bytes
+  ; initializae value to be the number to convert
+  lda number
+  sta value 
+  lda number + 1
+  sta value + 1
+  ;initialize the remainder to be 0
+  lda #0
+  sta mod10
+  sta mod10 + 1
+  ;END Initialization of the 4 bytes
 
-print_message_eeprom:  
-  lda startEEPROMData,x ;load letter from eeprom position startOsoLabs + the value of register X
-  beq loop ; jump to loop if I load a 0 on lda a zero means the end  of a n .asciiz string
-  jsr print_char 
-  inx
-  jmp print_message_eeprom
-  ;END Write all the letters
+
+  ldx #16
+divloop:
+  ;rotate the quotient and the remainder
+  rol value
+  rol value + 1
+  rol mod10
+  rol mod10 + 1
+  
+  ;substract 1010, we will do it 8 bits at a time
+  sec ; set the carry bit
+  lda mod10
+  sbc #10 ;substract with carry from 10
+  tay ; save the low part of the 16 bits of the remainder to register y
+  lda mod10 + 1
+  sbc #0 ;substract with carry zero as the 8 high bits are all zeroes from 10 division
+  ; the answer is on the combination of the a register and the y register
+  ; a,y = dividend - divisor
+  ; if the carry is clear for a then the dividend was less that the divisor and we will
+  ; discard the result and do a shift left
+  bcc ignore_result ; we will branch if the carry bit is clear (the carry of the last operation)
+  ; if we do not ignore the result we want to store the intermediate result a,y
+  ; in mod10+1 for a register and mod10 for the y register
+  sty mod10
+  sta mod10 + 1
+
+  ; and then we will keep with the division if we did less than 16 left shifts
+
+
+ignore_result:
+  dex ; decrement the X time that we shifted left
+      ; dex affects the Z flag is the content is zero
+  bne divloop ;if what is on the X register
+  
+
+
+
 
 loop:
   jmp loop
 
-startEEPROMData:
-  .asciiz "OsoLabs                                 MOS 6502" ;adds a 0 after the last byte
+number: .word 1729 ;the number we will convert
 
 lcd_wait:
   pha ; push to preserve the contents of the acummulator register
