@@ -1,0 +1,60 @@
+00001  0000             
+00002  0001             MESSAGE    = $0204
+00003  0001             
+00004  0001             *=$0300
+00005  0300  A9 00                 LDA #0
+00006  0302  8D 04 02              STA MESSAGE
+00007  0305  A9 09                 LDA #9
+00008  0307  69 30                 ADC #"0" ;BY ADDING ZERO TO THE A REGISTER WE WILL HAVE THE ASCII NUMBER OF ITS VALUE
+00009  0309  20 24 03              JSR PUSH_CHAR ;AND NOW WE STORE OUR CHARACTER IN THE STRING
+00010  030C  A9 02                 LDA #2
+00011  030E  69 30                 ADC #"0" ;BY ADDING ZERO TO THE A REGISTER WE WILL HAVE THE ASCII NUMBER OF ITS VALUE
+00012  0310  20 24 03              JSR PUSH_CHAR ;AND NOW WE STORE OUR CHARACTER IN THE STRING
+00013  0313  A9 07                 LDA #7
+00014  0315  69 30                 ADC #"0" ;BY ADDING ZERO TO THE A REGISTER WE WILL HAVE THE ASCII NUMBER OF ITS VALUE
+00015  0317  20 24 03              JSR PUSH_CHAR ;AND NOW WE STORE OUR CHARACTER IN THE STRING
+00016  031A  A9 01                 LDA #1
+00017  031C  69 30                 ADC #"0" ;BY ADDING ZERO TO THE A REGISTER WE WILL HAVE THE ASCII NUMBER OF ITS VALUE
+00018  031E  20 24 03              JSR PUSH_CHAR ;AND NOW WE STORE OUR CHARACTER IN THE STRING
+00019  0321             
+00020  0321             LOOP
+00021  0321  4C 21 03              JMP LOOP
+00022  0324             PUSH_CHAR
+00023  0324  48                    PHA ;PUSH NEW CHARACTER INTO THE STACK FIRST
+00024  0325  A0 00                 LDY #0
+00025  0327             ;
+00026  0327             CHAR_LOOP
+00027  0327  B9 04 02              LDA MESSAGE,Y ;GET CHAR ON STRING AND PUT INTO X
+00028  032A  AA                    TAX
+00029  032B  68                    PLA
+00030  032C  99 04 02              STA MESSAGE,Y ; WE REPLACED THE OLD FIRST CHARACTER WITH THE NEW ONE
+00031  032F  C8                    INY ; LETS GO TO THE NEXT CHARACTER
+00032  0330  8A                    TXA
+00033  0331  48                    PHA ; WE HAVE THE CHARACTER THAT USED TO BE ON THE BEGINNING OF THE MESSAGE ON THE STACK
+00034  0332                        ;IF A IS ZERO WE ARE AT THE END OF THE STRING
+00035  0332  D0 F3                 BNE CHAR_LOOP
+00036  0334  68                    PLA
+00037  0335  99 04 02              STA MESSAGE,Y ; STORE THE NULL TERMINATOR AGAIN
+00038  0338  60                    RTS
+00039  0339             ;
+00040  0339             NUMBER     
+00041  0339  C1 06                 WORD 1729 ;THE NUMBER WE WILL CONVERT
+00042  033B             ;==========================================================================================
+00043  033B             
+
+******* 4 Label(s) *******
+char_loop = $0327 
+loop = $0321 
+number = $0339 
+push_char = $0324 
+
+******* 2 Unused label(s) *******
+number
+push_char
+
+******* 2 Variable(s) *******
+message  = $0204
+tgt_c64  = $0001
+******* 1 Unused variables(s) *******
+tgt_c64
+

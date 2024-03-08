@@ -60,7 +60,7 @@ RESET:
   jsr lcd_send_instruction
   ; END Entry Mode Set instruction
 
-  lda #0 ;this isgnals the empty string
+  lda #0 ;this signals the empty string
   sta message ;initialize the string we will use for the results
   ;BEGIN Initialization of the 4 bytes
   ; initializae value to be the number to convert
@@ -128,7 +128,7 @@ ignore_result:
 
 print_message:  
   ;BEGIN Write all the letters
-  ldx #$00 ;start on FF so when i add one it will be 0
+  ldx #0 ;start on FF so when i add one it will be 0
 
 print_message_eeprom:  
   lda message,x ;load letter from eeprom position message + the value of register X
@@ -154,7 +154,7 @@ char_loop:
   pla
   sta message,y ; we replaced the old first character with the new one
   iny ; lets go to the next character
-  tax
+  txa
   pha ; we have the character that used to be on the beginning of the message on the stack
   ;if a is zero we are at the end of the string
   bne char_loop
