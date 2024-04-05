@@ -1,15 +1,18 @@
 ;CIA Ports and Constants
-PORTB = $6001
-PORTA = $6000
-DDRB = $6003
-DDRA = $6002
-ICR =$600d
+;PORTB = $6001
+;PORTA = $6000
+;DDRB = $6003
+;DDRA = $6002
 
 ;VIA Ports and Constants
-; PORTB = $6000
-; PORTA = $6001
-; DDRB = $6002
-; DDRA = $6003
+PORTB = $6000
+PORTA = $6001
+DDRB = $6002
+DDRA = $6003
+PCR = $600c
+IFR = $600d
+IER = $600e
+
 
 value =$0200 ;2 bytes, Low 16 bit half
 mod10 =$0202 ;2 bytes, high 16 bit half and as it has the remainder of dividing by 10
@@ -34,11 +37,17 @@ RESET:
       ;N Z C I D V
       ;- - - 0 - -
 
+
   ;BEGIN enable interrupts
-  ;enable FLAG for interrupts
-  ;bits set/clear,x,x,flag,sp,alarm,timerB,timerA
-  lda #%10010000
-  sta ICR  
+  ;enable CA1 for interrupts
+  ;bits set/clear,timer1,timer2,CB1,CB2,ShiftReg,CA1,CA2
+  lda #%10000010
+  sta IER 
+  ;enable negative edge transition ca1 pcr register
+  ;bits 7,6,5(cb2 control),4 cb1 control,3,2,1(ca2 control),0 ca1 control
+  lda #%00000000
+  sta PCR 
+
 
   ;BEGIN Initialize LCD Display
   ;set all port B pins as output
@@ -270,7 +279,7 @@ irq:
   bne exit_irq ;if the counter is zero it means it has rolled over so I will
                ;increment the next byte
   inc counter + 1
-exit_irq: 
+exit_irq:  
   ;add a delay to help with button bouncing 
   ldy #$ff
   ldx #$ff
@@ -281,7 +290,7 @@ delay:
   bne delay ;if Y is not zero go to delay
 
   ;bit command read the memory and compares just used to read the register
-  bit ICR ;clear the interrupt flag
+  bit PORTA ; clear the interrupt flag
 
   ;reserve order of stacking to restore values
   pla ; retrieve the Y register from the stack
