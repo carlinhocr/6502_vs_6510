@@ -23,14 +23,22 @@ RESET:
   ;BEGIN PHP, PLP test
   lda #$64  
   php ; store the procesor status register no zero flag
+  ;0011 0100
+  ; Flags N=0,V=0,E=1,B=1,D=0,I=1,Z=0,C=0
   lda #$0 ;change the status register to have the zero flag in 
   php ; store to the procesor status register with zero flag
+  ;0011 0110
+  ; Flags N=0,V=0,E=1,B=1,D=0,I=1,Z=1,C=0
   plp ; retrieve to the procesor status register with zero flag
   plp ; retrieve to the procesor status register no zero flag
   ;END PHP, PLP test
+
+  ;BEGIN TEST Subroutine
   jsr test_subroutine
   lda #$0
+  ;BEGIN TEST IRQ/BRK
   brk
+  NOP
 
 loop:
   jmp loop
@@ -39,12 +47,14 @@ test_subroutine;
   lda #$44
   sta startRAMData+3
   rts
-
+  ;END TEST Subroutine
 nmi:
 irq:
   lda #$55
   sta startRAMData+5
   rti
+  
+  ;END TEST IRQ/BRK
 
 ;complete the file
   .org $fffa
